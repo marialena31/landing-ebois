@@ -1,33 +1,22 @@
-import React from 'react';
-import { TreeIcon, TruckIcon, UsersIcon } from './icons';
-import { colors } from '../constants/colors';
+import React from "react";
 
 const AboutSection = () => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>
-        Notre Projet
-      </h2>
-      <p className="mb-4" style={{ color: colors.text }}>
-        Ebois.fr est une marketplace dédiée aux passionnés du bois et du chauffage. 
-        Nous connectons des fournisseurs artisanaux français proposant des bois de 
-        chauffage, des poêles, des braseros et d'autres équipements de qualité.
-      </p>
-      <div className="space-y-2">
-        <div className="flex items-center">
-          <TreeIcon className="mr-2" style={{ color: colors.accent }} />
-          <span>Bois issus de forêts françaises</span>
-        </div>
-        <div className="flex items-center">
-          <TruckIcon className="mr-2" style={{ color: colors.accent }} />
-          <span>Livraison directe par les artisans</span>
-        </div>
-        <div className="flex items-center">
-          <UsersIcon className="mr-2" style={{ color: colors.accent }} />
-          <span>Soutien aux entreprises locales</span>
+    <section id="AboutUs" className="bg-white py-24 sm:py-20">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+            Notre Projet
+          </h2>
+          <p className="mt-6 text-lg leading-8 text-gray-600">
+            Ebois.fr est une marketplace dédiée aux passionnés du bois et du
+            chauffage. Nous connectons des fournisseurs artisanaux français
+            proposant des bois de chauffage, des poêles, des braseros et
+            d'autres équipements de qualité.
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
