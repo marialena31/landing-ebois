@@ -1,0 +1,13 @@
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+/node_modules
+/build
+/dist
+/coverage
+/public
+/src/assets
+/src/components/assets
+/src/constants/assets
