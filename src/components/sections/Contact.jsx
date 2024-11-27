@@ -55,7 +55,7 @@ const Contact = () => {
 
         break;
 
-      case !emailRegex.test(email):
+      case !emailRegex.test(formValue.email):
         setError("Veuillez entrer une adresse email valide");
         setStatus(false);
 
