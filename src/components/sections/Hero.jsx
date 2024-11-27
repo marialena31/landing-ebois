@@ -1,6 +1,7 @@
 import React from "react";
 import { colors } from "../../constants/colors";
 import styled from "styled-components";
+import Button from "../ui/Button";
 
 const StyledLogo = styled.h1`
   font-family: "Chicle", serif;
@@ -23,12 +24,12 @@ const Hero = () => {
           artisanaux
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
-          <button className="rounded-md bg-primary px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-primary/90">
+          <Button>
             <a href="#features">Découvrir nos services</a>
-          </button>
-          <button className="rounded-md bg-secondary px-6 py-3 text-base font-semibold text-primary shadow-sm hover:bg-secondary/90">
+          </Button>
+          <Button variant="secondary">
             <a href="#contact">En savoir plus</a>
-          </button>
+          </Button>
         </div>
       </div>
     </section>

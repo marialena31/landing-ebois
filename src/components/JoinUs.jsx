@@ -1,12 +1,14 @@
 import React from "react";
 import { MailIcon } from "./icons";
 import { colors } from "../constants/colors";
+import styled from "styled-components";
+import Button from "./ui/Button";
 
 const JoinUs = () => {
   return (
-    <section id="joinUs" className="bg-white py-24 sm:py-20">
+    <section id="joinUs" className="bg-white py-24 sm:py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:text-center">
+        <div className="flex flex-col items-center gap-y-6 mx-auto max-w-2xl lg:text-center">
           <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
             Nous Rejoindre
           </h2>
@@ -15,16 +17,13 @@ const JoinUs = () => {
             énergies naturelles, Ebois.fr vous invite à faire partie de notre
             communauté.
           </p>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
-              <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-primary">
-                <MailIcon className="h-5 w-5 flex-none text-accent" />
-                <a href="mailto:contact@ebois.fr" className="h-5 w-5 flex-none">
-                  contact@ebois.fr
-                </a>
-              </dt>
-            </dl>
-          </div>
+          <Button
+            variant="secondary"
+            className="mx-w-6"
+            style={{ width: "50%" }}
+          >
+            <a href="#contact">Rejoignez-nous</a>
+          </Button>
         </div>
       </div>
     </section>

@@ -1,12 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, createRef } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import emailjs from "@emailjs/browser";
 
 const Newsletter = () => {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('idle');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+  const [formValue, setFormValue] = useState({
+    email: "",
+  });
+  const refCaptcha = createRef();
+  const form = useRef();
+
+  useEffect(() => {
+    let timeout;
+
+    if (status === true || false) {
+      // Show the info message for 10 seconds
+      timeout = setTimeout(() => {}, 10000);
+    }
+
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+        setStatus(null);
+      }
+    };
+  }, [status]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setStatus('success');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const token = refCaptcha.current.getValue();
+    setStatus(true);
+
+    const params = {
+      ...formValue,
+      "g-recaptcha-response": token,
+    };
+
+    switch (true) {
+      case formValue.email === "":
+        setError("Veuillez entrer une adresse email");
+        setStatus(false);
+
+        break;
+
+      case !emailRegex.test(email):
+        setError("Veuillez entrer une adresse email valide");
+        setStatus(false);
+
+        break;
+
+      case token === undefined:
+        setStatus(false);
+
+        break;
+
+      default:
+        emailjs
+          .sendForm(
+            import.meta.env.VITE_SERVICE_ID,
+            import.meta.env.VITE_TEMPLATE_NEWSLETTER_ID,
+            e.target,
+            import.meta.env.VITE_PUBLIC_KEY
+          )
+          .then(
+            (response) => {
+              if (response.status === 200) {
+                setStatus(false);
+                setFormValue({});
+              }
+            },
+            (err) => {
+              setStatus(false);
+              setFormValue({});
+              console.log("FAILED...", err.text);
+            }
+          );
+    }
   };
 
   return (
@@ -17,20 +90,29 @@ const Newsletter = () => {
             Restez informé
           </h2>
           <p className="mt-4 text-lg leading-8 text-gray-600">
-            Inscrivez-vous à notre newsletter et recevez 10% de réduction sur votre première commande
+            Inscrivez-vous à notre newsletter et recevez 10% de réduction sur
+            votre première commande
           </p>
         </div>
-        {status === 'idle' ? (
-          <form onSubmit={handleSubmit} className="mx-auto mt-10 max-w-md">
+        {status === "idle" ? (
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col items-center mx-auto mt-10 max-w-md gap-y-4"
+            noValidate
+          >
             <div className="flex gap-x-4">
               <input
                 type="email"
+                name="email"
                 required
                 placeholder="Votre email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formValue.email}
+                onChange={(e) =>
+                  setFormValue({ ...formValue, email: e.target.value })
+                }
                 className="min-w-0 flex-auto rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-accent"
               />
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <button
                 type="submit"
                 className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
@@ -38,6 +120,11 @@ const Newsletter = () => {
                 Je m'inscris
               </button>
             </div>
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              ref={refCaptcha}
+              onChange={() => setStatus(null)}
+            />
           </form>
         ) : (
           <div className="mx-auto mt-10 max-w-md text-center">

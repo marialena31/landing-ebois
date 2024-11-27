@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect, createRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import emailjs from "@emailjs/browser";
+import Button from "../ui/Button";
 
 const Contact = () => {
   const [status, setStatus] = useState(null);
+  const [error, setError] = useState("");
   const [formValue, setFormValue] = useState({
     name: "",
     email: "",
@@ -18,9 +20,7 @@ const Contact = () => {
 
     if (status === true || false) {
       // Show the info message for 10 seconds
-      timeout = setTimeout(() => {
-        setAlertPrompt(null);
-      }, 10000);
+      timeout = setTimeout(() => {}, 10000);
     }
 
     return () => {
@@ -34,6 +34,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const token = refCaptcha.current.getValue();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setStatus(true);
 
     const params = {
@@ -42,17 +43,32 @@ const Contact = () => {
     };
 
     switch (true) {
-      case formValue.user_name === "":
+      case formValue.name === "":
+        setError("Veuillez entrer un nom");
         setStatus(false);
 
         break;
 
-      case formValue.user_email === "":
+      case formValue.email === "":
+        setError("Veuillez entrer une adresse email");
+        setStatus(false);
+
+        break;
+
+      case !emailRegex.test(email):
+        setError("Veuillez entrer une adresse email valide");
+        setStatus(false);
+
+        break;
+
+      case formValue.message === "":
+        setError("Veuillez entrer un message");
         setStatus(false);
 
         break;
 
       case token === undefined:
+        setError("Captcha invalide");
         setStatus(false);
 
         break;
@@ -96,7 +112,8 @@ const Contact = () => {
           <form
             ref={form}
             onSubmit={handleSubmit}
-            className="mx-auto mt-16 max-w-xl"
+            className="flex flex-col mx-auto mt-16 max-w-xl gap-y-6"
+            noValidate
           >
             <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
@@ -152,19 +169,17 @@ const Contact = () => {
                 />
               </div>
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="mt-10">
-              <ReCAPTCHA
-                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-                ref={refCaptcha}
-                onChange={() => setStatus(null)}
-              />
-              <button
-                type="submit"
-                className="block w-full rounded-md bg-primary px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
-              >
+              <Button type="submit" className="block w-full px-3.5 py-2.5">
                 Envoyer
-              </button>
+              </Button>
             </div>
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              ref={refCaptcha}
+              onChange={() => setStatus(null)}
+            />
           </form>
         ) : (
           <div className="mx-auto mt-16 max-w-xl text-center">
