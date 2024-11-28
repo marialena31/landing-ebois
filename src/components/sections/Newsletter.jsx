@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, createRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import emailjs from "@emailjs/browser";
+import Button from "../ui/Button";
 
 const Newsletter = () => {
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState(null);
   const [error, setError] = useState("");
   const [formValue, setFormValue] = useState({
     email: "",
@@ -115,12 +116,7 @@ const Newsletter = () => {
                   }
                   className="min-w-0 flex-auto rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-accent"
                 />
-                <button
-                  type="submit"
-                  className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
-                >
-                  Je m'inscris
-                </button>
+                <Button type="submit">Envoyer</Button>
               </div>
               {error && <p className="text-red-500 text-sm mt-2">{error}</p>}{" "}
               {/* Moved error message */}
