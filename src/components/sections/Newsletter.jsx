@@ -66,10 +66,7 @@ const Newsletter = () => {
           if (response.status === 200) {
             setStatus(true);
             setFormValue({
-              name: "",
               email: "",
-              message: "",
-              type: "client",
             });
             refCaptcha.current.reset();
             setError("");
@@ -97,6 +94,7 @@ const Newsletter = () => {
         </div>
         {status === "idle" ? (
           <form
+            ref={form}
             onSubmit={handleSubmit}
             className="flex flex-col items-center mx-auto mt-10 max-w-md gap-y-4"
             noValidate
