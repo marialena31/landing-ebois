@@ -35,42 +35,35 @@ const Contact = () => {
     e.preventDefault();
     const token = refCaptcha.current.getValue();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setStatus(true);
 
-    const params = {
-      ...formValue,
-      "g-recaptcha-response": token,
-    };
+    // Move captcha validation to the top and check for null/empty values
+    if (!token) {
+      setError("Veuillez valider le captcha");
+      setStatus(false);
+      return;
+    }
+
+    setStatus(true);
 
     switch (true) {
       case formValue.name === "":
         setError("Veuillez entrer un nom");
         setStatus(false);
-
         break;
 
       case formValue.email === "":
         setError("Veuillez entrer une adresse email");
         setStatus(false);
-
         break;
 
       case !emailRegex.test(formValue.email):
         setError("Veuillez entrer une adresse email valide");
         setStatus(false);
-
         break;
 
       case formValue.message === "":
         setError("Veuillez entrer un message");
         setStatus(false);
-
-        break;
-
-      case token === undefined:
-        setError("Captcha invalide");
-        setStatus(false);
-
         break;
 
       default:
@@ -84,13 +77,20 @@ const Contact = () => {
           .then(
             (response) => {
               if (response.status === 200) {
-                setStatus(false);
-                setFormValue({});
+                setStatus(true); // Changed to true for success
+                setFormValue({
+                  name: "",
+                  email: "",
+                  message: "",
+                  type: "client",
+                }); // Reset with initial values
+                refCaptcha.current.reset(); // Reset the captcha
+                setError(""); // Clear any previous errors
               }
             },
             (err) => {
+              setError("Une erreur est survenue. Veuillez réessayer."); // Add error message
               setStatus(false);
-              setFormValue({});
               console.log("FAILED...", err.text);
             }
           );

@@ -32,30 +32,24 @@ const Newsletter = () => {
     e.preventDefault();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const token = refCaptcha.current.getValue();
-    setStatus(true);
+    // Move captcha validation to the top and check for null/empty values
+    if (!token) {
+      setError("Veuillez valider le captcha");
+      setStatus(false);
+      return;
+    }
 
-    const params = {
-      ...formValue,
-      "g-recaptcha-response": token,
-    };
+    setStatus(true);
 
     switch (true) {
       case formValue.email === "":
         setError("Veuillez entrer une adresse email");
         setStatus(false);
-
         break;
 
       case !emailRegex.test(formValue.email):
         setError("Veuillez entrer une adresse email valide");
         setStatus(false);
-
-        break;
-
-      case token === undefined:
-        setStatus(false);
-
         break;
 
       default:
@@ -69,13 +63,17 @@ const Newsletter = () => {
           .then(
             (response) => {
               if (response.status === 200) {
-                setStatus(false);
-                setFormValue({});
+                setStatus(true); // Changed to true for success
+                setFormValue({
+                  email: "",
+                }); // Reset with initial values
+                refCaptcha.current.reset(); // Reset the captcha
+                setError(""); // Clear any previous errors
               }
             },
             (err) => {
+              setError("Une erreur est survenue. Veuillez réessayer."); // Add error message
               setStatus(false);
-              setFormValue({});
               console.log("FAILED...", err.text);
             }
           );
