@@ -43,60 +43,69 @@ const Contact = () => {
       return;
     }
 
-    setStatus(true);
+    // Reset previous error state
+    setError("");
 
-    switch (true) {
-      case formValue.name === "":
-        setError("Veuillez entrer un nom");
-        setStatus(false);
-        break;
-
-      case formValue.email === "":
-        setError("Veuillez entrer une adresse email");
-        setStatus(false);
-        break;
-
-      case !emailRegex.test(formValue.email):
-        setError("Veuillez entrer une adresse email valide");
-        setStatus(false);
-        break;
-
-      case formValue.message === "":
-        setError("Veuillez entrer un message");
-        setStatus(false);
-        break;
-
-      default:
-        emailjs
-          .sendForm(
-            import.meta.env.VITE_SERVICE_ID,
-            import.meta.env.VITE_TEMPLATE_ID,
-            e.target,
-            import.meta.env.VITE_PUBLIC_KEY
-          )
-          .then(
-            (response) => {
-              if (response.status === 200) {
-                setStatus(true); // Changed to true for success
-                setFormValue({
-                  name: "",
-                  email: "",
-                  message: "",
-                  type: "client",
-                }); // Reset with initial values
-                refCaptcha.current.reset(); // Reset the captcha
-                setError(""); // Clear any previous errors
-              }
-            },
-            (err) => {
-              setError("Une erreur est survenue. Veuillez réessayer."); // Add error message
-              setStatus(false);
-              console.log("FAILED...", err.text);
-            }
-          );
+    // Validate all fields first
+    if (!token) {
+      setError("Veuillez valider le captcha");
+      setStatus(false);
+      return;
     }
-  };
 
+    if (formValue.name === "") {
+      setError("Veuillez entrer un nom");
+      setStatus(false);
+      return;
+    }
+
+    if (formValue.email === "") {
+      setError("Veuillez entrer une adresse email");
+      setStatus(false);
+      return;
+    }
+
+    if (!emailRegex.test(formValue.email)) {
+      setError("Veuillez entrer une adresse email valide");
+      setStatus(false);
+      return;
+    }
+
+    if (formValue.message === "") {
+      setError("Veuillez entrer un message");
+      setStatus(false);
+      return;
+    }
+
+    // If all validations pass, send the email
+    emailjs
+      .sendForm(
+        import.meta.env.VITE_SERVICE_ID,
+        import.meta.env.VITE_TEMPLATE_ID,
+        e.target,
+        import.meta.env.VITE_PUBLIC_KEY
+      )
+      .then(
+        (response) => {
+          if (response.status === 200) {
+            setStatus(true);
+            setFormValue({
+              name: "",
+              email: "",
+              message: "",
+              type: "client",
+            });
+            refCaptcha.current.reset();
+            setError("");
+          }
+        },
+        (err) => {
+          setError("Une erreur est survenue. Veuillez réessayer.");
+          setStatus(false);
+          console.log("FAILED...", err.text);
+        }
+      );
+  };
   return (
     <section id="contact" className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">

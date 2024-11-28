@@ -3,7 +3,6 @@ import ReCAPTCHA from "react-google-recaptcha";
 import emailjs from "@emailjs/browser";
 
 const Newsletter = () => {
-  const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
   const [formValue, setFormValue] = useState({
@@ -30,54 +29,58 @@ const Newsletter = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const token = refCaptcha.current.getValue();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Move captcha validation to the top and check for null/empty values
+    // Reset previous error state
+    setError("");
+
+    // Validate all fields first
     if (!token) {
       setError("Veuillez valider le captcha");
       setStatus(false);
       return;
     }
 
-    setStatus(true);
-
-    switch (true) {
-      case formValue.email === "":
-        setError("Veuillez entrer une adresse email");
-        setStatus(false);
-        break;
-
-      case !emailRegex.test(formValue.email):
-        setError("Veuillez entrer une adresse email valide");
-        setStatus(false);
-        break;
-
-      default:
-        emailjs
-          .sendForm(
-            import.meta.env.VITE_SERVICE_ID,
-            import.meta.env.VITE_TEMPLATE_NEWSLETTER_ID,
-            e.target,
-            import.meta.env.VITE_PUBLIC_KEY
-          )
-          .then(
-            (response) => {
-              if (response.status === 200) {
-                setStatus(true); // Changed to true for success
-                setFormValue({
-                  email: "",
-                }); // Reset with initial values
-                refCaptcha.current.reset(); // Reset the captcha
-                setError(""); // Clear any previous errors
-              }
-            },
-            (err) => {
-              setError("Une erreur est survenue. Veuillez réessayer."); // Add error message
-              setStatus(false);
-              console.log("FAILED...", err.text);
-            }
-          );
+    if (formValue.email === "") {
+      setError("Veuillez entrer une adresse email");
+      setStatus(false);
+      return;
     }
+
+    if (!emailRegex.test(formValue.email)) {
+      setError("Veuillez entrer une adresse email valide");
+      setStatus(false);
+      return;
+    }
+    // If all validations pass, send the email
+    emailjs
+      .sendForm(
+        import.meta.env.VITE_SERVICE_ID,
+        import.meta.env.VITE_TEMPLATE_ID,
+        e.target,
+        import.meta.env.VITE_PUBLIC_KEY
+      )
+      .then(
+        (response) => {
+          if (response.status === 200) {
+            setStatus(true);
+            setFormValue({
+              name: "",
+              email: "",
+              message: "",
+              type: "client",
+            });
+            refCaptcha.current.reset();
+            setError("");
+          }
+        },
+        (err) => {
+          setError("Une erreur est survenue. Veuillez réessayer.");
+          setStatus(false);
+          console.log("FAILED...", err.text);
+        }
+      );
   };
 
   return (
