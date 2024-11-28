@@ -35,14 +35,8 @@ const Newsletter = () => {
     // Reset previous error state
     setError("");
 
-    // Validate all fields first
-    if (!token) {
-      setError("Veuillez valider le captcha");
-      setStatus(false);
-      return;
-    }
-
-    if (formValue.email === "") {
+    // Validate email first
+    if (formValue.email.trim() === "") {
       setError("Veuillez entrer une adresse email");
       setStatus(false);
       return;
@@ -50,6 +44,13 @@ const Newsletter = () => {
 
     if (!emailRegex.test(formValue.email)) {
       setError("Veuillez entrer une adresse email valide");
+      setStatus(false);
+      return;
+    }
+
+    // Then validate captcha
+    if (!token) {
+      setError("Veuillez valider le captcha");
       setStatus(false);
       return;
     }
@@ -99,31 +100,36 @@ const Newsletter = () => {
             className="flex flex-col items-center mx-auto mt-10 max-w-md gap-y-4"
             noValidate
           >
-            <div className="flex gap-x-4">
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="Votre email"
-                value={formValue.email}
-                onChange={(e) =>
-                  setFormValue({ ...formValue, email: e.target.value })
-                }
-                className="min-w-0 flex-auto rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-accent"
+            <div className="flex flex-col gap-x-4">
+              {" "}
+              {/* Changed to flex-col */}
+              <div className="flex gap-x-4">
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="Votre email"
+                  value={formValue.email}
+                  onChange={(e) =>
+                    setFormValue({ ...formValue, email: e.target.value })
+                  }
+                  className="min-w-0 flex-auto rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-accent"
+                />
+                <button
+                  type="submit"
+                  className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
+                >
+                  Je m'inscris
+                </button>
+              </div>
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}{" "}
+              {/* Moved error message */}
+              <ReCAPTCHA
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                ref={refCaptcha}
+                onChange={() => setStatus(null)}
               />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <button
-                type="submit"
-                className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90"
-              >
-                Je m'inscris
-              </button>
             </div>
-            <ReCAPTCHA
-              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-              ref={refCaptcha}
-              onChange={() => setStatus(null)}
-            />
           </form>
         ) : (
           <div className="mx-auto mt-10 max-w-md text-center">
